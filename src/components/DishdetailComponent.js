@@ -2,8 +2,6 @@ import React from 'react';
 import {Card, CardImg,  CardText, CardBody, CardTitle} from 'reactstrap';
 
 
-   
-
     function RenderDish({dish}) {
             return (
                 <div className="col-12 col-md-5 m-1">
@@ -47,6 +45,12 @@ import {Card, CardImg,  CardText, CardBody, CardTitle} from 'reactstrap';
                         <RenderComments comments = {props.dish.comments} />
                     </div>
                 </div>
+            );
+        }
+        else
+        {
+            return(
+                <div></div>
             );
         }
     }

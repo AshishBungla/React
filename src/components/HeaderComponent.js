@@ -23,7 +23,6 @@ class Header extends Component {
     });
   }
 
-
   toggleModal(){
     this.setState({
       isModalOpen: !this.state.isModalOpen
@@ -36,7 +35,6 @@ class Header extends Component {
             + " Remember: " + this.remember.checked);
         event.preventDefault();
   }
-
 
   render() {
     return(

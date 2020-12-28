@@ -1,23 +1,108 @@
-import React from 'react';
-import {Card, CardImg,  CardText, CardBody, CardTitle,BreadcrumbItem,Breadcrumb} from 'reactstrap';
+import React, { Component } from 'react';
+import {Card, CardImg,  CardText, CardBody, CardTitle,BreadcrumbItem,Breadcrumb,Button, Modal, ModalHeader, ModalBody, Label, Row} from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { Control, LocalForm, Errors } from 'react-redux-form';
 
+const required = (val) => val && val.length;
+const maxLength = (len) => (val) => !(val) || (val.length<= len);
+const minLength = (len) => (val) => (val) && (val.length >= len);
 
-    function RenderDish({dish}) {
-            return (
-                <div className="col-12 col-md-5 m-1">
-                  <Card>
-                     <CardImg width="100%" src={dish.image} alt={dish.name} />
-                     <CardBody>
-                        <CardTitle heading>{dish.name}</CardTitle>
-                        <CardText>{dish.description}</CardText>
-                     </CardBody>
-                  </Card>
-                </div>
-            );
+class CommentForm extends Component {
+
+    constructor(props){
+        super(props);
+        this.state = { 
+          isModalOpen : false
+        };
+
+        this.toggleModal = this.toggleModal.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    function RenderComments({comments}) {
+    toggleModal(){
+        this.setState({
+          isModalOpen: !this.state.isModalOpen
+        });
+    }
+
+    handleSubmit(values){
+        this.toggleModal();
+        this.props.addComment(this.props.dishId, values.rating, values.author, values.comment);
+    }
+
+    render(){
+        return(
+        <React.Fragment>
+          <Button outline onClick={this.toggleModal}><span className="fa fa-pencil fa-lg"></span> Submit Comment</Button>
+          <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
+            <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
+            <ModalBody >
+                <LocalForm className="mt-0 m-3">
+                    <Row className="form-group">
+                    <Label htmlFor="rating" >Rating</Label>
+                        <Control.select model=".rating" name="rating"
+                            className="form-control">
+                            <option>1</option>
+                            <option>2</option>
+                            <option>3</option>
+                            <option>4</option>
+                            <option>5</option>
+                        </Control.select>
+                    </Row>
+                    <Row className="form-group">
+                        <Label htmlFor="author">Your Name</Label>
+                        <Control.text model=".author" id="author" name="author"
+                            placeholder="Author"
+                            className="form-control"
+                            validators={{
+                                required, minLength:minLength(3), maxLength:maxLength(15)
+                            }}
+                        />
+                        <Errors
+                            className="text-danger"
+                            model=".author"
+                            show="touched"
+                            messages= {{
+                                required:'Required ',
+                                minLength: 'Must be greater than 2 characters ',
+                                maxLength: 'Must be 15 character or less '
+                            }}
+                        />
+                    </Row>
+                    <Row className="form-group">
+                        <Label htmlFor="comment">Comment</Label>
+                        <Control.textarea model=".comment" id="comment" name="comment"
+                            rows="6"
+                            className="form-control"/>
+                    </Row>
+                    <Row className="form-group">
+                        <Button type="submit" color="primary" onClick={this.handleSubmit}>
+                            Submit
+                        </Button>
+                    </Row>
+                </LocalForm>
+            </ModalBody>
+          </Modal>
+          </React.Fragment>
+        );
+      }
+    }
+
+    function RenderDish({dish}) {
+        return (
+            <div className="col-12 col-md-5 m-1">
+                <Card>
+                    <CardImg width="100%" src={dish.image} alt={dish.name} />
+                    <CardBody>
+                    <CardTitle heading>{dish.name}</CardTitle>
+                    <CardText>{dish.description}</CardText>
+                    </CardBody>
+                </Card>
+            </div>
+        );
+    }
+
+    function RenderComments({comments,addComment,dishId}) {
         if(comments != null)
         {
             return (
@@ -33,6 +118,9 @@ import { Link } from 'react-router-dom';
                                 );
                             })} 
                     </ul>
+                    <br/>
+                    <CommentForm dishId={dishId}  addComment={addComment}
+                    /> 
                 </div>
             );
         }        
@@ -41,8 +129,7 @@ import { Link } from 'react-router-dom';
             return(
                 <div></div>
             )
-            
-        } 
+        }
     }
 
     const DishDetail = (props) => {
@@ -61,7 +148,11 @@ import { Link } from 'react-router-dom';
                     </div>
                     <div className="row">
                         <RenderDish dish = {props.dish} />  
-                        <RenderComments comments = {props.comments} />  
+                        <RenderComments comments = {props.comments} 
+                           addComment={props.addComment}
+                           dishId ={props.dish.id}
+                        />
+
                     </div>     
                 </div>
             );

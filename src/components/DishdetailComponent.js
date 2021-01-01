@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {Card, CardImg,  CardText, CardBody, CardTitle,BreadcrumbItem,Breadcrumb,Button, Modal, ModalHeader, ModalBody, Label, Row} from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from 'react-redux-form';
+import {Loading} from './LoadingComponent';
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !(val) || (val.length<= len);
@@ -36,8 +37,8 @@ class CommentForm extends Component {
           <Button outline onClick={this.toggleModal}><span className="fa fa-pencil fa-lg"></span> Submit Comment</Button>
           <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
             <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
-            <ModalBody >
-                <LocalForm className="mt-0 m-3">
+            <ModalBody className="mt-0 m-3">
+                <LocalForm onSubmit = {(values)=> this.handleSubmit(values)}>
                     <Row className="form-group">
                     <Label htmlFor="rating" >Rating</Label>
                         <Control.select model=".rating" name="rating"
@@ -50,9 +51,9 @@ class CommentForm extends Component {
                         </Control.select>
                     </Row>
                     <Row className="form-group">
-                        <Label htmlFor="author">Your Name</Label>
+                        <Label htmlFor="author">Author</Label>
                         <Control.text model=".author" id="author" name="author"
-                            placeholder="Author"
+                            placeholder="Your Name"
                             className="form-control"
                             validators={{
                                 required, minLength:minLength(3), maxLength:maxLength(15)
@@ -76,7 +77,7 @@ class CommentForm extends Component {
                             className="form-control"/>
                     </Row>
                     <Row className="form-group">
-                        <Button type="submit" color="primary" onClick={this.handleSubmit}>
+                        <Button type="submit" value="submit" color="primary" >
                             Submit
                         </Button>
                     </Row>
@@ -133,7 +134,25 @@ class CommentForm extends Component {
     }
 
     const DishDetail = (props) => {
-        if(props.dish !=null){
+        if(props.Loading){
+            return(
+                <div className="container">
+                    <div className="row">
+                        <Loading/>
+                    </div>
+                </div>
+            );
+        }
+        else if(props.errMess){
+            return(
+                <div className="container">
+                    <div className="row">
+                        <h4>{props.errMess}</h4>
+                    </div>
+                </div>
+            );
+        }
+        else if(props.dish !=null){
             return (
                 <div className="container">
                      <div className="row">
@@ -152,7 +171,6 @@ class CommentForm extends Component {
                            addComment={props.addComment}
                            dishId ={props.dish.id}
                         />
-
                     </div>     
                 </div>
             );

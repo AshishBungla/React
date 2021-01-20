@@ -20,16 +20,18 @@ function RenderLeader({leader, isLoading, errMess}){
     else{
         return(
             <div key={leader.id} className="col-12 mt-5">
+                <Fade in>
                     <Media tag="li">
-                        <Media left middle>
-                            <Media object src={baseUrl + leader.image} alt={leader.name} />
+                            <Media left middle>
+                                <Media object src={baseUrl + leader.image} alt={leader.name} />
+                            </Media>
+                            <Media body className="col-12">
+                                <Media heading>{leader.name}</Media>
+                                <p>{leader.designation}</p>
+                                <p>{leader.description}</p>
+                            </Media>    
                         </Media>
-                        <Media body className="col-12">
-                            <Media heading>{leader.name}</Media>
-                            <p>{leader.designation}</p>
-                            <p>{leader.description}</p>
-                        </Media>    
-                    </Media>
+                </Fade>
             </div>
         );
     }
